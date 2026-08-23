@@ -17,7 +17,9 @@ namespace gaussMod {
 template <class T = int>
 struct ModLinearSol {
 	vector<T> particular;//一组特解
-	vector<vector<T>> basis;//齐次方程 Ax = 0 的基础解系
+	vector<vector<T>> basis;//齐次方程 Ax = 0 的基础解系;size == 0:唯一解
+	vector<vector<T>> mat;//高斯消元后的最简矩阵
+	vector<int> pivot;
 };
 template <class T = int>
 optional<ModLinearSol<T>> gaussMod(vector<vector<T>> a, i64 mod) {
@@ -90,6 +92,8 @@ optional<ModLinearSol<T>> gaussMod(vector<vector<T>> a, i64 mod) {
 		}
 		sol.basis.emplace_back(move(v));
 	}
+	sol.mat = move(a);
+	sol.pivot = move(pivot);
 	return sol;
 }
 
