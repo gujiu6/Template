@@ -76,9 +76,8 @@ optional<ModLinearSol<T>> gaussMod(vector<vector<T>> a, i64 mod) {
 	ModLinearSol<T> sol;
 	sol.particular.assign(n, 0);//初始化特解
 	for(int col = 0; col < n; col++) {
-		if(pivot[col] != -1) {
-			sol.particular[col] = a[pivot[col]][n];
-		}
+		if(pivot[col] == -1) continue;
+		sol.particular[col] = a[pivot[col]][n];
 	}
 	for(int free = 0; free < n; free++) {
 		if(pivot[free] != -1) continue;
@@ -139,9 +138,8 @@ optional<pair<bool, vector<ld>>> gaussPivot(vector<vector<ld>> a){
     }
 	vector<ld> x(n);
 	for (int col = 0; col < n; col++){
-		if(pivot[col] != -1) {
+		if(pivot[col] == -1) continue;
 			x[col] = a[pivot[col]][n];
-		}
     }
 	if(rk == n) return {{true, x}};//唯一解
     return {{false, x}};//无穷多解,返回一组特解
@@ -181,9 +179,8 @@ optional<XorLinearSol<MAXN>> gaussXor(vector<bitset<MAXN>> a, int n) {
 	XorLinearSol<MAXN> sol;
 	sol.particular.assign(n, 0);
 	for(int col = 0; col < n; col++) {
-		if(pivot[col] != -1) {
-			sol.particular[col] = a[pivot[col]][n];
-		}
+		if(pivot[col] == -1) continue;
+		sol.particular[col] = a[pivot[col]][n];
 	}
 	for(int free = 0; free < n; free++) {
 		if(pivot[free] != -1) continue;
