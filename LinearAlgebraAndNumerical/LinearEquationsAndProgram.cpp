@@ -1,7 +1,7 @@
 /*线性方程与规划
 1.高斯消元:唯一解、无解、多解(同余,异或方程组)
 2.高斯消元:列主元(普通方程组)
-
+3.高斯消元:bitset优化(异或方程组)
 */
 #include <bits/stdc++.h>
 #include <cassert>
@@ -85,10 +85,9 @@ optional<ModLinearSol<T>> gaussMod(vector<vector<T>> a, i64 mod) {
 		vector<T> v(n);
 		v[free] = 1;
 		for(int col = 0; col < n; col++) {
-			if(pivot[col] != -1) {
-				int row = pivot[col];
-				v[col] = (mod - a[row][free]) % mod;
-			}
+			if(pivot[col] == -1) continue;
+			int row = pivot[col];
+			v[col] = (mod - a[row][free]) % mod;
 		}
 		sol.basis.emplace_back(move(v));
 	}
@@ -148,6 +147,58 @@ optional<pair<bool, vector<ld>>> gaussPivot(vector<vector<ld>> a){
     return {{false, x}};//无穷多解,返回一组特解
 }
 
+//3.高斯消元:bitset优化(异或方程组)
+namespace gaussXor {
 
-
+template <int MAXN>
+struct XorLinearSol {
+	vector<int> particular;
+	vector<vector<int>> basis;
+	vector<bitset<MAXN + 1>> mat;
+	vector<int> pivot;
+};
+template <int MAXN>
+optional<XorLinearSol<MAXN>> gaussXor(vector<bitset<MAXN>> a, int n) {
+	int m = a.size(), rk = 0;
+	vector<int> pivot(n, -1);
+	for(int col = 0; col < n && rk < m; col++) {
+		int row = rk;
+		while(row < m && !a[row][col]) {
+			row++;
+		}
+		if(row == m) continue;
+		swap(a[rk], a[row]);
+		for(int i = 0; i < m; i++) {
+			if(i != rk && a[i][col]) {
+				a[i] ^= a[rk];
+			}
+		}
+		pivot[col] = rk++;
+	}
+	for(int i = rk; i < m; i++) {
+		if(a[i][n]) return nullopt;
+	}
+	XorLinearSol<MAXN> sol;
+	sol.particular.assign(n, 0);
+	for(int col = 0; col < n; col++) {
+		if(pivot[col] != -1) {
+			sol.particular[col] = a[pivot[col]][n];
+		}
+	}
+	for(int free = 0; free < n; free++) {
+		if(pivot[free] != -1) continue;
+		vector<int> v(n, 0);
+		v[free] = 1;
+		for(int col = 0; col < n; col++) {
+			if(pivot[col] == -1) continue;
+			int row = pivot[col];
+			v[col] = a[row][free];
+		}
+		sol.basis.emplace_back(move(v));
+	}
+	sol.mat = move(a);
+	sol.pivot = move(pivot);
+	return sol;
+}
+}
 
