@@ -39,7 +39,7 @@ optional<ModLinearSol<T>> gaussMod(vector<vector<T>> a, i64 mod) {
 	//预先规范化整个矩阵
 	for(auto &row : a) {
 		assert(row.size() == n + 1);
-		for(T &x : row) {
+		for(auto &x : row) {
 			x = norm(x);
 		}
 	}
