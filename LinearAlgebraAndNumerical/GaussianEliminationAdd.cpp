@@ -8,8 +8,7 @@ using ld = long double;
 constexpr ld eps = 1e-12;
 
 //2.高斯消元:列主元
-template <class T = ld>
-optional<pair<bool, vector<T>>> gaussPivot(vector<vector<T>> a){
+optional<pair<bool, vector<ld>>> gaussPivot(vector<vector<ld>> a){
 	//Ax = b
     int m = a.size(), n = a[0].size() - 1, rk = 0;
     vector<int> pivot(n, -1);//第 col 个未知数的主元在哪一行
@@ -34,7 +33,7 @@ optional<pair<bool, vector<T>>> gaussPivot(vector<vector<T>> a){
             if (i == rk) {
                 continue;
             }
-            T q = a[i][col];
+            ld q = a[i][col];
             for (int j = col; j <= n; j++) {
                 a[i][j] -= q * a[rk][j];
             }
@@ -48,14 +47,14 @@ optional<pair<bool, vector<T>>> gaussPivot(vector<vector<T>> a){
             return nullopt;
         }
     }
-	vector<T> x(n);
+	vector<ld> x(n);
 	for (int col = 0; col < n; col++){
 		if(pivot[col] != -1) {
 			x[col] = a[pivot[col]][n];
 		}
     }
-	if(rk == n) return {true, x};//唯一解
-    return {false, x};//无穷多解,返回一组特解
+	if(rk == n) return {{true, x}};//唯一解
+    return {{false, x}};//无穷多解,返回一组特解
 }
 
 
