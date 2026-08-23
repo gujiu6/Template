@@ -88,7 +88,7 @@ optional<ModLinearSol<T>> gaussMod(vector<vector<T>> a, i64 mod) {
 				v[col] = (mod - a[row][free]) % mod;
 			}
 		}
-		sol.basis.push_back(move(v));
+		sol.basis.emplace_back(move(v));
 	}
 	return sol;
 }

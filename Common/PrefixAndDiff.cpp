@@ -139,7 +139,7 @@ struct gcdRanges {
                     cur.back().first = l;
                 }
                 else {
-                    cur.push_back({l, x});
+                    cur.emplace_back({l, x});
                 }
             }
             reverse(cur.begin(), cur.end());

@@ -48,7 +48,7 @@ private:
     int add(int u, const T& x) {
         if(!u) {
             u = t.size();
-            t.push_back({x, rnd(), 0, 0, 1, 1});
+            t.emplace_back({x, rnd(), 0, 0, 1, 1});
             return u;
         }
         if(t[u].x == x) {

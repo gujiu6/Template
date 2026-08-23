@@ -94,7 +94,7 @@ public:
     void add(const T& x) {
         if(!root) {
             root = (int)t.size();
-            t.push_back({x, {}, 0, 1, 1});
+            t.emplace_back({x, {}, 0, 1, 1});
             return;
         }
         int u = root;
@@ -112,7 +112,7 @@ public:
             u = t[u].ch[d];
         }
         u = (int)t.size();
-        t.push_back({x, {}, p, 1, 1});
+        t.emplace_back({x, {}, p, 1, 1});
         t[p].ch[d] = u;
         // 插入后将新节点旋到根
         splay(u);

@@ -69,7 +69,7 @@ Cart Cartesian(const vector<T>& a) {
             c.fa[last] = i;
             c.left[i] = last;
         }
-        s.push_back(i);
+        s.emplace_back(i);
     }
     if(n) {
         c.root = s[0];
