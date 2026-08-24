@@ -1,3 +1,6 @@
+/*
+1.带删堆
+*/
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -47,7 +50,44 @@ public:
     int size() const{return sz;}
 };
 
-
+//1.带删堆
+template <class T, class Cmp = less<T>> 
+class ErasableHeap {
+public:
+    priority_queue<T, vector<T>, Cmp> a, b;
+    int n;
+    void clear() {
+        while(!a.empty() && !b.empty() && a.top() == b.top()) {
+            a.pop();
+            b.pop();
+        }
+    }
+    void push(const T& x) {
+        a.push(x);
+        n++;
+    }
+    void erase(const T& x) {
+        b.push(x);
+        n--;
+        clear();
+    }
+    const T &top() {
+        clear();
+        return a.top();
+    }
+    void pop() {
+        clear();
+        a.pop();
+        n--;
+        clear();
+    }
+    int size() const {
+        return n;
+    }
+    bool empty() const {
+        return n == 0;
+    }
+};
 
 
 
