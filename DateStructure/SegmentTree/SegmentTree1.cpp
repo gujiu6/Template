@@ -13,29 +13,25 @@ const i64 INF = 1e18;
 //1.单点修改线段树
 namespace Seg {
 
-struct Sum {
+struct Info {
     i64 val = 0;
-    Sum() = default;
-    Sum(i64 x) {
+    Info() = default;
+    Info(i64 x) {
         val = x;
     }
-    friend Sum operator+ (const Sum& a, const Sum& b) {
-        return Sum(a.val + b.val);
+    friend Info operator+ (const Info& a, const Info& b) {
+        return Info(a.val + b.val);
     }
 };
-template <class Info>
+template <class Info = Info>
 class Seg {
 public:
     int n;
     vector<Info> tr;
-    Seg(int n = 0) {init(n);}
-    Seg(const vector<Info>& a){init(a);}
-    void init(const int& _n) {
-        n = _n;
+    Seg(int n = 0): n(n) {
         tr.assign((n << 1) + 2, Info{});
     }
-    void init(const vector<Info>& a) {
-        n = a.size() - 1;
+    Seg(const vector<Info>& a): n(a.size() - 1){
         tr.assign((n << 1) + 2, Info{});
         for(int i = 1; i <= n; i++) {
             tr[n + i - 1] = a[i];
@@ -52,6 +48,13 @@ public:
     void set(int p, Info v) {
         p = p + n - 1;
         tr[p] = v;
+        for(p >>= 1; p; p >>= 1) {
+            pull(p);
+        }
+    }
+    void add(int p, Info v) {
+        p = p + n - 1;
+        tr[p] = tr[p] + v;
         for(p >>= 1; p; p >>= 1) {
             pull(p);
         }
