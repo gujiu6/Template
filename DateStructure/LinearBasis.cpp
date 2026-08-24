@@ -1,8 +1,7 @@
 /*线性基
 1.异或线性基
 2.空间向量线性基
-3.第K大线性基
-4.区间线性基
+3.区间线性基
 */
 #include <bits/stdc++.h>
 #include <cassert>
@@ -55,12 +54,21 @@ public:
             }
         }
     }
-    // 返回第 k 小的可表示数，k 从 0 开始
-    // 例如 kth(0) = 0
-    optional<T> kth(T k) const {
+    // 返回第 k 小的可表示数，k 从 0 开始;largest={false:第 k 小;true:第 k 大}
+    optional<T> kth(T k, bool largest = false) const {
         // rk == W 时不能计算 1ULL << W
-        if (rk < W && k >= (1ULL << rk)) {
+        if (rk < W && k >= (T(1) << rk)) {
             return nullopt;
+        }
+        if(largest) {
+            T total;
+            if(rk == W) {
+                total = numeric_limits<T>::max();
+            }
+            else {
+                total = (T(1) << rk) - 1;
+            }
+            k = total - k;
         }
         auto b = a;
         //化为更规范的形式
@@ -177,130 +185,7 @@ public:
     }
 };
 
-//3.第K大线性基
-// 5.异或线性基第 k 小 / 第 k 大
-// 给定整数集合 a，求其异或线性空间中第 k 个不同的值
-// k 从 0 开始
-//
-// largest = false：第 k 小
-// largest = true ：第 k 大
-//
-// 时间复杂度：O(N * W + W^2)
-// 空间复杂度：O(W)
-
-template <class T = u64, int W = 64>
-optional<unsigned long long> kthXor(
-    const vector<unsigned long long> &a,
-    unsigned long long k,
-    bool largest = false
-) {
-    // b[i]：最高位为 i 的线性基
-    array<unsigned long long, W> b{};
-
-    // 线性基的秩
-    int rk = 0;
-
-    // 建立异或线性基
-    for (auto x : a) {
-
-        // 从最高位开始进行异或高斯消元
-        for (int i = W - 1; i >= 0; i--) {
-
-            // 当前位没有 1
-            if (!(x >> i & 1)) {
-                continue;
-            }
-
-            // 当前位已经存在主元
-            if (b[i]) {
-                x ^= b[i];
-            }
-
-            // 当前位没有主元，建立新主元
-            else {
-                b[i] = x;
-                rk++;
-                break;
-            }
-        }
-    }
-
-    // 线性空间中一共有 2^rk 个不同的异或值
-    //
-    // rk == 64 时不能计算：
-    // 1ULL << 64
-    if (rk < 64 && k >= (1ULL << rk)) {
-        return nullopt;
-    }
-
-    // 将线性基化为规范形式
-    //
-    // 目标：
-    // b[i] 的第 i 位是唯一的 1，
-    // 并且低位主元不会影响高位主元。
-    for (int i = 0; i < W; i++) {
-
-        if (!b[i]) {
-            continue;
-        }
-
-        // 消掉其他基向量中的第 i 位
-        for (int j = i + 1; j < W; j++) {
-
-            if (b[j] >> i & 1) {
-                b[j] ^= b[i];
-            }
-        }
-    }
-
-    // 如果要求第 k 大：
-    //
-    // 第 0 大 = 最大值
-    // 第 1 大 = 第二大
-    //
-    // 转换成第：
-    //
-    // (2^rk - 1 - k) 小
-    if (largest) {
-
-        unsigned long long total;
-
-        if (rk == 64) {
-            // 2^64 - 1
-            total = ULLONG_MAX;
-        }
-        else {
-            // 2^rk - 1
-            total = (1ULL << rk) - 1;
-        }
-
-        k = total - k;
-    }
-
-    unsigned long long ans = 0;
-
-    // p 表示当前是第几个有效基向量
-    int p = 0;
-
-    // 从低位主元开始
-    for (int i = 0; i < W; i++) {
-
-        if (!b[i]) {
-            continue;
-        }
-
-        // k 的第 p 位决定是否选择当前基向量
-        if (k >> p & 1) {
-            ans ^= b[i];
-        }
-
-        p++;
-    }
-
-    return ans;
-}
-
-//4.区间线性基
+//3.区间线性基
 template <class T = u64, int Bits = numeric_limits<T>::digits>
 class RangeBasis {
     struct Entry {
