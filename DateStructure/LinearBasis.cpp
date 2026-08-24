@@ -1,6 +1,7 @@
 /*线性基
 1.异或线性基
 2.空间向量线性基
+4.区间线性基
 */
 #include <bits/stdc++.h>
 #include <cassert>
@@ -172,5 +173,64 @@ public:
             }
         }
         return res;
+    }
+};
+
+//4.区间线性基
+template <class T = u64, int Bits = numeric_limits<T>::digits>
+class RangeBasis {
+    struct Entry {
+        T value = 0;
+        int pos = -1;// 该基向量对应的最靠右可用位置;查询 [l, r] 时只有 position >= l 的基向量才能使用
+    };
+    vector<array<Entry, Bits>> pre;//前缀 [0, i] 的异或线性基
+public:
+    RangeBasis() = default;
+    explicit RangeBasis(const vector<T> &a) {
+        build(a);
+    }
+    // 建立区间线性基
+    void build(const vector<T> &a) {
+        int n = a.size();
+        pre.assign(n, {});
+        for (int i = 0; i < n; i++) {
+            // 继承前缀 [0, i - 1] 的线性基
+            if (i) {
+                pre[i] = pre[i - 1];
+            }
+            T value = a[i];
+            int pos = i;
+            // 普通异或线性基的高斯消元过程
+            for (int bit = Bits - 1; bit >= 0 && value; bit--) {
+                if (!(value >> bit & 1)) continue;
+                auto &[basisValue, basisPos] = pre[i][bit];
+                // 优先保留 pos 更靠右的基向量
+                // 这样查询 [l,r] 时可以通过 pos >= l 判断能否使用
+                if (basisPos < pos) {
+                    swap(basisValue, value);
+                    swap(basisPos, pos);
+                }
+                // 消掉当前最高位,继续向低位消元
+                value ^= basisValue;
+            }
+        }
+    }
+    // 查询区间 [l, r] 内任意子集异或值与 x 异或后的最大值
+    T maxXor(int l, int r, T x = 0) const {
+        assert(0 <= l && l <= r && r < (int)pre.size());
+        T ans = x;
+        // 从高位到低位贪心
+        for (int bit = Bits - 1; bit >= 0; bit--) {
+            auto [value, pos] = pre[r][bit];
+            // position >= left：该基向量可以完全由区间 [left, right] 构造
+            // 异或后变大则选择它
+            if (pos >= l) {
+                ans = max(ans, ans ^ value);
+            }
+        }
+        return ans;
+    }
+    int size() const {
+        return pre.size();
     }
 };
