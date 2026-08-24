@@ -105,12 +105,12 @@ public:
         }
         return res;
     }
-    // 当前空间大小,即可表示的不同数的个数;rk == 64 时 2^64 无法用 u64 表示
+    // 当前空间大小,即可表示的不同数的个数;rk == W 时 2^W 表示
     optional<T> size() const {
-        if (rk == 64) {
+        if (rk == W) {
             return nullopt;
         }
-        return 1ULL << rk;
+        return T(1) << rk;
     }
 };
 
