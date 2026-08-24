@@ -181,7 +181,7 @@ template <class T = u64, int Bits = numeric_limits<T>::digits>
 class RangeBasis {
     struct Entry {
         T value = 0;
-        int pos = -1;// 该基向量对应的最靠右可用位置;查询 [l, r] 时只有 position >= l 的基向量才能使用
+        int pos = 0;// 该基向量对应的最靠右可用位置;查询 [l, r] 时只有 position >= l 的基向量才能使用
     };
     vector<array<Entry, Bits>> pre;//前缀 [0, i] 的异或线性基
 public:
@@ -191,13 +191,11 @@ public:
     }
     // 建立区间线性基
     void build(const vector<T> &a) {
-        int n = a.size();
-        pre.assign(n, {});
-        for (int i = 0; i < n; i++) {
+        int n = a.size() - 1;
+        pre.assign(n + 1, {});
+        for (int i = 1; i <= n; i++) {
             // 继承前缀 [0, i - 1] 的线性基
-            if (i) {
-                pre[i] = pre[i - 1];
-            }
+            pre[i] = pre[i - 1];
             T value = a[i];
             int pos = i;
             // 普通异或线性基的高斯消元过程
@@ -217,7 +215,7 @@ public:
     }
     // 查询区间 [l, r] 内任意子集异或值与 x 异或后的最大值
     T maxXor(int l, int r, T x = 0) const {
-        assert(0 <= l && l <= r && r < (int)pre.size());
+        assert(1 <= l && l <= r && r < pre.size());
         T ans = x;
         // 从高位到低位贪心
         for (int bit = Bits - 1; bit >= 0; bit--) {
