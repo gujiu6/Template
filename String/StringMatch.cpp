@@ -12,6 +12,19 @@ using i64 = long long;
 
 //1.字符串哈希(1-based)
 class StrHash {
+private:
+    static i64 get_base() {
+        static const i64 base = [] {
+            mt19937_64 rng(
+                chrono::steady_clock::now().time_since_epoch().count()
+                ^ (uintptr_t)new char
+            );
+            uniform_int_distribution<i64> dist(256, min(p1, p2) - 2);
+            return dist(rng);
+        }();
+
+        return base;
+    }
 public:
     static constexpr i64 p1 = 1000000007;
     static constexpr i64 p2 = 1000000009;
