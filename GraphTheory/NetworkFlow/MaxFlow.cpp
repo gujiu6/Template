@@ -11,7 +11,7 @@ template <class T = int>
 class Flow {
 public:
     struct E {
-        int v, rev;//to:转移目标状态;rev:反向边编号
+        int v, rev;//v:转移目标状态;rev:反向边编号
         T cap;//剩余容量
     };
     int n;//残量网络点数
@@ -48,12 +48,12 @@ public:
         T ans = 0;
         for(int &i = cur[u]; i < e[u].size(); i++) {
             auto &a = e[u][i];
-            if(a.cap == 0 || h[a.to] != h[u] + 1) {
+            if(a.cap == 0 || h[a.v] != h[u] + 1) {
                 continue;
             }
-            T d = dfs(a.to, t, min(f - ans, a.cap));
+            T d = dfs(a.v, t, min(f - ans, a.cap));
             a.cap -= d;
-            e[a.to][a.rev].cap += d;
+            e[a.v][a.rev].cap += d;
             ans += d;
             if(ans == f) break;
         }
